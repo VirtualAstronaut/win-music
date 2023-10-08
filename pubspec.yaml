@@ -7,12 +7,25 @@ environment:
   sdk: '>=3.1.2 <4.0.0'
 
 dependencies:
+  auto_route: ^7.8.4
   flutter:
     sdk: flutter
+  flutter_animate: ^4.2.0+1
   flutter_hooks: ^0.20.2
+  fpdart: ^1.1.0
+  # functional_widget: ^0.10.1
+  # functional_widget_annotation: ^0.10.0
   hooks_riverpod: ^2.4.3
   riverpod_annotation: ^2.2.0
+  sized_context: ^1.0.0+4
   youtube_explode_dart: ^2.0.2
+
+  functional_widget:
+    git:
+      url: https://github.com/rrousselGit/functional_widget.git
+      ref: master
+      path: packages/functional_widget
+  loading_animation_widget: ^1.2.0+4
 
 dev_dependencies:
   flutter_test:
@@ -25,3 +38,11 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  fonts:
+    - family: TitilliumWeb
+      fonts:
+        - asset: assets/fonts/TitilliumWeb-Regular.ttf
+        - asset: assets/fonts/TitilliumWeb-Light.ttf
+        - asset: assets/fonts/TitilliumWeb-Bold.ttf
+        - asset: assets/fonts/TitilliumWeb-Italic.ttf
+          style: italic  

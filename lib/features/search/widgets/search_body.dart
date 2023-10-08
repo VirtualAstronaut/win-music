@@ -1,4 +1,14 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:functional_widget_annotation/functional_widget_annotation.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:win_music/core/theme/colors.dart';
+import 'package:win_music/shared/widgets/loader.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
+
+import 'package:win_music/core/theme/padding.dart';
 import 'package:win_music/features/search/provider/provider.dart';
 
 /// {@template search_body}
@@ -6,13 +16,191 @@ import 'package:win_music/features/search/provider/provider.dart';
 ///
 /// Add what it does
 /// {@endtemplate}
-class SearchBody extends ConsumerWidget {
+class SearchBody extends StatelessWidget {
   /// {@macro search_body}
   const SearchBody({super.key});
 
   @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: largePadding,
+        right: largePadding,
+        bottom: largePadding,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: largePadding,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.background,
+              ),
+            ),
+          ),
+          const Flexible(
+            child: _SearchBar(),
+          ),
+          const Flexible(
+            flex: 10,
+            child: _SearchData(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SearchData extends ConsumerWidget {
+  const _SearchData({super.key});
+
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // final count = ref.watch(searchProvider);
-    return Text('');
+    final searchProvider = ref.watch(searchNotifierProvider);
+    return searchProvider.when(
+      data: (data) {
+        return _ListData(
+          data: data,
+        );
+      },
+      error: (error, stackTrace) {
+        log('$error');
+        return ErrorWidget.withDetails(
+          message: error.toString(),
+        );
+      },
+      loading: () => const Loader(),
+    );
+  }
+}
+
+class _ListData extends StatelessWidget {
+  const _ListData({
+    super.key,
+    required this.data,
+  });
+  final List<Video> data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: ListView.builder(
+        itemCount: data.length,
+        padding: const EdgeInsets.only(
+          top: mediumpadding,
+          bottom: mediumpadding,
+        ),
+        itemBuilder: (context, index) {
+          return _ListTile(
+            video: data[index],
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _ListTile extends StatelessWidget {
+  const _ListTile({super.key, required this.video});
+  final Video video;
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.zero,
+        side: BorderSide(
+          color: Colors.black,
+          width: 1,
+        ),
+      ),
+      hoverColor: Colors.black12,
+      trailing: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _PlayButton(),
+          _QueueButton(),
+        ],
+      ),
+      onTap: () {},
+      title: Text(
+        video.title,
+      ),
+      subtitle: Text(
+        durationString(
+          video.duration,
+        ),
+      ),
+    );
+  }
+
+  String durationString(Duration? duration) {
+    //TODO: add formmater
+    if (duration == null) return '';
+    if (duration.inSeconds <= 60) return '${duration.inSeconds}';
+    return '${duration.inMinutes}:${duration.inSeconds}';
+  }
+}
+
+class _QueueButton extends StatelessWidget {
+  const _QueueButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: () {},
+      icon: Icon(
+        Icons.queue_music,
+        color: Theme.of(context).iconTheme.color,
+      ),
+    );
+  }
+}
+
+class _PlayButton extends StatelessWidget {
+  const _PlayButton({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      onPressed: () {},
+      icon: Icon(
+        Icons.play_arrow_outlined,
+        color: Theme.of(context).iconTheme.color,
+      ),
+    );
+  }
+}
+
+class _SearchBar extends ConsumerWidget {
+  const _SearchBar({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    // final controller = useTextEditingController();
+
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+      ),
+      child: TextFormField(
+        onChanged: (value) => onChanged(ref, value),
+        decoration: const InputDecoration(
+          prefixIcon: Icon(
+            Icons.search,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void onChanged(WidgetRef ref, String value) {
+    if (value.length < 3) return;
+    final notifier = ref.read(searchNotifierProvider.notifier);
+    notifier.search(value);
   }
 }
