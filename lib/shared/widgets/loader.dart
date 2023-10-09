@@ -12,7 +12,7 @@ class Loader extends StatelessWidget {
       padding: padding ?? mediumPaddingInset,
       child: LoadingAnimationWidget.threeArchedCircle(
         color: Theme.of(context).iconTheme.color ?? lightThemeColors.iconColor,
-        size: context.widthPx / 12,
+        size: 50,
       ),
     );
   }

@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:win_music/core/theme/textstyles.dart';
 import 'colors.dart';
 
 part 'theme_data.g.dart';
 
 final lightThemeData = ThemeData(
+  textTheme: const TextTheme(
+    titleLarge: TextStyle(
+      fontSize: titleTextSize,
+    ),
+    titleSmall: TextStyle(
+      fontSize: subtitleTextSize,
+    ),
+  ),
   fontFamily: 'TitilliumWeb',
   colorScheme: const ColorScheme.light(
     background: Colors.white,

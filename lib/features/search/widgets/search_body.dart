@@ -1,10 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:functional_widget_annotation/functional_widget_annotation.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:win_music/core/theme/colors.dart';
+import 'package:win_music/features/player/provider/provider.dart';
 import 'package:win_music/shared/widgets/loader.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
@@ -22,27 +19,20 @@ class SearchBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(
+    return const Padding(
+      padding: EdgeInsets.only(
         left: largePadding,
+        top: largePadding,
         right: largePadding,
         bottom: largePadding,
       ),
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
         children: [
-          SizedBox(
-            height: largePadding,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.background,
-              ),
-            ),
-          ),
-          const Flexible(
+          Flexible(
             child: _SearchBar(),
           ),
-          const Flexible(
+          Flexible(
             flex: 10,
             child: _SearchData(),
           ),
@@ -104,22 +94,23 @@ class _ListData extends StatelessWidget {
 class _ListTile extends StatelessWidget {
   const _ListTile({super.key, required this.video});
   final Video video;
+  static const _shape = RoundedRectangleBorder(
+    borderRadius: BorderRadius.zero,
+    side: BorderSide(
+      color: Colors.black,
+      width: 1,
+    ),
+  );
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.zero,
-        side: BorderSide(
-          color: Colors.black,
-          width: 1,
-        ),
-      ),
+      shape: _shape,
       hoverColor: Colors.black12,
-      trailing: const Row(
+      trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _PlayButton(),
-          _QueueButton(),
+          _PlayButton(video: video),
+          _QueueButton(video: video),
         ],
       ),
       onTap: () {},
@@ -145,8 +136,9 @@ class _ListTile extends StatelessWidget {
 class _QueueButton extends StatelessWidget {
   const _QueueButton({
     super.key,
+    required this.video,
   });
-
+  final Video video;
   @override
   Widget build(BuildContext context) {
     return IconButton(
@@ -159,20 +151,26 @@ class _QueueButton extends StatelessWidget {
   }
 }
 
-class _PlayButton extends StatelessWidget {
+class _PlayButton extends ConsumerWidget {
   const _PlayButton({
     super.key,
+    required this.video,
   });
-
+  final Video video;
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return IconButton(
-      onPressed: () {},
+      onPressed: () => onPlay(ref),
       icon: Icon(
         Icons.play_arrow_outlined,
         color: Theme.of(context).iconTheme.color,
       ),
     );
+  }
+
+  void onPlay(WidgetRef ref) {
+    final playerNotifier = ref.read(playerProvider.notifier);
+    playerNotifier.play(video);
   }
 }
 
@@ -183,6 +181,31 @@ class _SearchBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // final controller = useTextEditingController();
 
+    return Row(
+      children: [
+        IconButton(
+          onPressed: () => popScreen(context),
+          icon: const Icon(
+            Icons.keyboard_double_arrow_left_outlined,
+          ),
+        ),
+        const Expanded(
+          child: _TextField(),
+        ),
+      ],
+    );
+  }
+
+  void popScreen(BuildContext context) {
+    Navigator.pop(context);
+  }
+}
+
+class _TextField extends ConsumerWidget {
+  const _TextField({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     return DecoratedBox(
       decoration: const BoxDecoration(
         color: Colors.white,

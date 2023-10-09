@@ -12,13 +12,13 @@ class SearchPage extends StatelessWidget {
   static Route<dynamic> route() {
     return MaterialPageRoute<dynamic>(builder: (_) => const SearchPage());
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
       body: SearchView(),
     );
-  }  
+  }
 }
 
 /// {@template search_view}
