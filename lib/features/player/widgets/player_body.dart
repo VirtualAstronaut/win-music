@@ -5,6 +5,7 @@ import 'package:sized_context/sized_context.dart';
 import 'package:win_music/core/enums/enums.dart';
 import 'package:win_music/features/player/provider/provider.dart';
 import 'package:win_music/features/search/search.dart';
+import 'package:win_music/shared/widgets/widgets.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 /// {@template player_body}
@@ -45,12 +46,12 @@ class _PlayerUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log('${context.widthPx}');
     return SizedBox(
       width: context.widthPx,
       child: Column(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             video.title,
@@ -60,8 +61,33 @@ class _PlayerUI extends StatelessWidget {
             video.author,
             style: Theme.of(context).textTheme.titleSmall,
           ),
+          const _PlayerControls(),
         ],
       ),
     );
+  }
+}
+
+class _PlayerControls extends ConsumerWidget {
+  const _PlayerControls({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ThemedIconButton(
+          onPressed: () => onNext(ref),
+          icon: const Icon(
+            Icons.skip_next_outlined,
+          ),
+        )
+      ],
+    );
+  }
+
+  void onNext(WidgetRef ref) {
+    final notifier = ref.read(playerProvider.notifier);
+    notifier.playNext();
   }
 }

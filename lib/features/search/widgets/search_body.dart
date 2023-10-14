@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:win_music/features/player/provider/provider.dart';
 import 'package:win_music/shared/widgets/loader.dart';
+import 'package:win_music/shared/widgets/themed_icon_button.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 import 'package:win_music/core/theme/padding.dart';
@@ -133,21 +134,27 @@ class _ListTile extends StatelessWidget {
   }
 }
 
-class _QueueButton extends StatelessWidget {
+class _QueueButton extends ConsumerWidget {
   const _QueueButton({
     super.key,
     required this.video,
   });
   final Video video;
   @override
-  Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: () {},
-      icon: Icon(
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ThemedIconButton(
+      onPressed: () => onQueue(ref),
+      icon: const Icon(
         Icons.queue_music,
-        color: Theme.of(context).iconTheme.color,
       ),
     );
+  }
+
+  void onQueue(
+    WidgetRef ref,
+  ) {
+    final notifier = ref.read(playerProvider.notifier);
+    notifier.queue(video);
   }
 }
 
@@ -159,11 +166,10 @@ class _PlayButton extends ConsumerWidget {
   final Video video;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return IconButton(
+    return ThemedIconButton(
       onPressed: () => onPlay(ref),
-      icon: Icon(
+      icon: const Icon(
         Icons.play_arrow_outlined,
-        color: Theme.of(context).iconTheme.color,
       ),
     );
   }
@@ -183,7 +189,7 @@ class _SearchBar extends ConsumerWidget {
 
     return Row(
       children: [
-        IconButton(
+        ThemedIconButton(
           onPressed: () => popScreen(context),
           icon: const Icon(
             Icons.keyboard_double_arrow_left_outlined,

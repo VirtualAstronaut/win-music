@@ -6,6 +6,8 @@ class ProviderLogger extends ProviderObserver {
   @override
   void didUpdateProvider(ProviderBase<Object?> provider, Object? previousValue,
       Object? newValue, ProviderContainer container) {
+    if (true) return;
+
     log('''{
       "provider" : "${provider.name ?? provider.runtimeType}",
       "oldValue" : $previousValue,
