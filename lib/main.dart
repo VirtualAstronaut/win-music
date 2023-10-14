@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:win_music/core/theme/theme_data.dart';
+import 'package:win_music/shared/logger/provider_logger.dart';
 
 import 'features/player/player.dart';
 
 void main() {
   runApp(
-    const ProviderScope(
-      child: MainApp(),
+    ProviderScope(
+      observers: [
+        ProviderLogger(),
+      ],
+      child: const MainApp(),
     ),
   );
 }

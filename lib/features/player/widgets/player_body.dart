@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:sized_context/sized_context.dart';
+import 'package:win_music/core/enums/enums.dart';
 import 'package:win_music/features/player/provider/provider.dart';
 import 'package:win_music/features/search/search.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
@@ -17,12 +18,12 @@ class PlayerBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final videoDetails = ref.watch(playerProvider);
-    if (videoDetails == null) {
+    final playerDetails = ref.watch(playerProvider);
+    if (playerDetails.playerstate == WinPlayerState.empty) {
       return const _EmptyUi();
     }
     return _PlayerUI(
-      video: videoDetails,
+      video: playerDetails.video as Video,
     );
   }
 }
