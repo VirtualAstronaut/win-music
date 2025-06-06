@@ -127,10 +127,14 @@ class _ListTile extends StatelessWidget {
   }
 
   String durationString(Duration? duration) {
-    //TODO: add formmater
     if (duration == null) return '';
-    if (duration.inSeconds <= 60) return '${duration.inSeconds}';
-    return '${duration.inMinutes}:${duration.inSeconds}';
+    final minutes = duration.inMinutes;
+    final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+    if (duration.inHours > 0) {
+      final hours = duration.inHours;
+      return '$hours:${minutes.remainder(60).toString().padLeft(2, '0')}:$seconds';
+    }
+    return '$minutes:$seconds';
   }
 }
 

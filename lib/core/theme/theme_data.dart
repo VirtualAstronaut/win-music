@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:win_music/core/theme/textstyles.dart';
 import 'colors.dart';
 
-part 'theme_data.g.dart';
 
 final lightThemeData = ThemeData(
+  useMaterial3: true,
   textTheme: const TextTheme(
     titleLarge: TextStyle(
       fontSize: titleTextSize,
@@ -15,8 +15,10 @@ final lightThemeData = ThemeData(
     ),
   ),
   fontFamily: 'TitilliumWeb',
-  colorScheme: const ColorScheme.light(
-    background: Colors.white,
+  scaffoldBackgroundColor: lightThemeColors.backgroundColor,
+  colorScheme: ColorScheme.fromSeed(
+    seedColor: Colors.blue,
+    background: lightThemeColors.backgroundColor,
   ),
   iconTheme: IconThemeData(
     color: lightThemeColors.iconColor,
@@ -46,18 +48,6 @@ final _focusedInputBorder = _inputBorder.copyWith(
     width: 1.2,
   ),
 );
-// @riverpod
-// class ThemeData extends _$ThemeData {
-//   @override
-//    build() {
-//     return ;
-//   }
-// }
-
-@riverpod
-class DefaultTheme extends _$DefaultTheme {
-  @override
-  ThemeData build() {
-    return lightThemeData;
-  }
-}
+final defaultThemeProvider = Provider<ThemeData>((ref) {
+  return lightThemeData;
+});
