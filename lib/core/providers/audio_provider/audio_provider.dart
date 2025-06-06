@@ -1,24 +1,22 @@
 import 'dart:developer';
 
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:win_music/features/player/player.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 import 'package:audioplayers/audioplayers.dart';
 
-part 'audio_provider.g.dart';
-
-@riverpod
-AudioPlayer audioPlayer(AudioPlayerRef ref) {
+final audioPlayerProvider = Provider<AudioPlayer>((ref) {
   final player = AudioPlayer();
-
-  ref.onDispose(() {
-    player.dispose();
-  });
-  _playerCompleteListner(player, ref);
+  ref.onDispose(player.dispose);
+  _playerCompleteListener(player, ref);
   return player;
-}
+});
 
-void _playerCompleteListner(AudioPlayer player, AudioPlayerRef ref) {
+final positionProvider = StreamProvider<Duration>((ref) {
+  final player = ref.watch(audioPlayerProvider);
+  return player.onPositionChanged;
+});
+
+void _playerCompleteListener(AudioPlayer player, Ref ref) {
   player.onPlayerComplete.listen((event) {
     log('Player Complete Called');
     final notifier = ref.read(playerProvider.notifier);

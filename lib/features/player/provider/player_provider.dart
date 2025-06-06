@@ -1,33 +1,38 @@
-import 'dart:developer';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:win_music/core/enums/enums.dart';
 import 'package:win_music/core/providers/core_providers.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
-part 'player_provider.g.dart';
+class PlayerStateData {
+  PlayerStateData({required this.playerstate, this.video});
+  final WinPlayerState playerstate;
+  final Video? video;
 
-@riverpod
-class Player extends _$Player {
-  @override
-  ({
-    WinPlayerState playerstate,
-    Video? video,
-  }) build() {
-    return (playerstate: WinPlayerState.empty, video: null);
+  PlayerStateData copyWith({WinPlayerState? playerstate, Video? video}) {
+    return PlayerStateData(
+      playerstate: playerstate ?? this.playerstate,
+      video: video ?? this.video,
+    );
   }
+}
 
-  void play(Video video) async {
-    final player = ref.watch(audioPlayerProvider);
+class PlayerNotifier extends StateNotifier<PlayerStateData> {
+  PlayerNotifier(this.ref)
+      : super(PlayerStateData(playerstate: WinPlayerState.empty));
+
+  final Ref ref;
+
+  Future<void> play(Video video) async {
+    final player = ref.read(audioPlayerProvider);
     final audioUri = await _getAudioUrl(video);
     queue(video);
     if (player.state == PlayerState.playing) {
       await player.stop();
     }
-    player.play(UrlSource(audioUri.toString()));
-    state = (playerstate: WinPlayerState.playing, video: video);
+    await player.play(UrlSource(audioUri.toString()));
+    state = state.copyWith(playerstate: WinPlayerState.playing, video: video);
   }
 
   void queue(Video video) {
@@ -72,9 +77,14 @@ class Player extends _$Player {
   }
 
   Future<Uri> _getAudioUrl(Video video) async {
-    final yt = ref.watch(ytClientProvider);
+    final yt = ref.read(ytClientProvider);
     final manifest = await yt.videos.streamsClient.getManifest(video.id);
 
     return manifest.audioOnly.withHighestBitrate().url;
   }
 }
+
+final playerProvider =
+    StateNotifierProvider<PlayerNotifier, PlayerStateData>((ref) {
+  return PlayerNotifier(ref);
+});
